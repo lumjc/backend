@@ -18,7 +18,7 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({limit: '20mb' , extended:true}))
 
 app.use(forumRoutes)
-app.use("/user", userRoutes)
+app.use(userRoutes)
 
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true , useUnifiedTopology: true })

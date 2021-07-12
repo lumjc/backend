@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const bcrypt = require('bcrypt')
 
-const User = require ('../models/user')
-router.post('/signup', (req, res,next) => { 
+const User = require ('../models/user');
+const user = require('../models/user');
+router.post('/api/v1/user/signup', (req, res,next) => { 
 
     User.find({ email: req.body.email})
         .exec()
@@ -45,6 +46,36 @@ router.post('/signup', (req, res,next) => {
 
             }
         })
+})
+
+router.post('/api/v1/user/login' , async (req, res, next) => {
+    try {
+        const user = await User.findOne({
+            email: req.body.email
+        })
+
+        console.log(req.body.password);
+        console.log(user.password);
+
+        if (user) {
+            let match = await bcrypt.compare(req.body.password, user.password)
+            console.log(match);
+            if (match) {
+                return res.status(200).json ({
+                    message: "Auth successful"
+                })
+            } else {
+                res.status(401).json ({
+                    message:'Auth failed'
+                })
+            }
+        }
+        
+    } catch(err) {
+        console.log(err)
+        res.status(500).json(err)
+    }
+    
 })
 
 router.delete('/:userId' , async (req, res, next) => {
