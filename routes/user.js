@@ -2,9 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const User = require ('../models/user');
-const user = require('../models/user');
 router.post('/api/v1/user/signup', (req, res,next) => { 
 
     User.find({ email: req.body.email})
@@ -48,21 +48,27 @@ router.post('/api/v1/user/signup', (req, res,next) => {
         })
 })
 
-router.post('/api/v1/user/login' , async (req, res, next) => {
+router.post('/api/v1/user/login' , async (req, res) => {
     try {
         const user = await User.findOne({
             email: req.body.email
         })
 
-        console.log(req.body.password);
-        console.log(user.password);
-
         if (user) {
             let match = await bcrypt.compare(req.body.password, user.password)
             console.log(match);
             if (match) {
+           const token = jwt.sign({
+                    email: req.body.email,
+                    username: req.body.username
+                }, process.env.JWT_KEY,
+                {
+                    expiresIn: "1h"
+                }
+            )
                 return res.status(200).json ({
-                    message: "Auth successful"
+                    message: "Auth successful",
+                    token: token
                 })
             } else {
                 res.status(401).json ({

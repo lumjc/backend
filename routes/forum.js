@@ -3,8 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Posts = require('../models/posts');
+const checkAuth = require('../middleware/check-auth')
 
-router.post('/api/v1/posts', async (req, res) => {
+router.post('/api/v1/posts', checkAuth, async (req, res) => {
     try {
     const posts = new Posts({
         _id: new mongoose.Types.ObjectId(),
