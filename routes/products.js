@@ -34,7 +34,12 @@ const upload = multer ({storage : storage, limits: {
 router.get('/api/v1/products', async (req, res) => {
     
     try {
-      const newProduct = await Product.find()
+      const newProduct = await Product.find({
+        name: req.body.name,
+        desc: req.body.desc,
+        weight: req.body.weight,
+        productImage: req.file.path
+      })
       console.log(newProduct)
       res.status(200).json(newProduct)
     } catch (err) {
@@ -44,13 +49,6 @@ router.get('/api/v1/products', async (req, res) => {
 });
 
 
-
-router.get('/api/v1/products',(req,res) => {
-    res.status(200).json ({
-        message:"handling get requests"
-    })
-})
-
 // create a breakup product
 router.post('/api/v1/products',upload.single('productImage'), async (req, res, next) => {
     try {
@@ -59,6 +57,7 @@ router.post('/api/v1/products',upload.single('productImage'), async (req, res, n
         name: req.body.name,
         desc: req.body.desc,
         weight: req.body.weight,
+        productImage: req.file.path
     })
     const newProducts = await products.save()
     console.log(newProducts)

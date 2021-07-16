@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 app.use(morgan('dev'))
 app.use(express.json())
-app.use(express.static('public'))
+app.use('/uploads',express.static('uploads'))
 app.use(bodyParser.urlencoded({limit: '20mb' , extended:true}))
 app.use((req,res) =>{
   res.header('Access-Control-Allow-Origin','*');
