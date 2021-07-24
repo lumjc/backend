@@ -2,7 +2,10 @@ const mongoose = require('mongoose')
 
 const postsSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
     username: {
       type: String,
       required: true
@@ -11,7 +14,7 @@ const postsSchema = mongoose.Schema({
       type: Date,
       default: Date.now()
     },
-    description: {
+    content: {
         type: String,
         required: true
     }

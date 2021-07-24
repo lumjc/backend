@@ -1,44 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
-var fs = require('fs');
-var path = require('path');
-var bodyParser = require('body-parser')
+const cloudinary = require("../utility/cloudinary")
+const upload = require("../utility/multer")
 const Products = require('../models/products');
-const multer = require('multer')
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null,'./uploads/')
-    },
-    filename: function(req, file, cb){
-        cb(null, new Date().toISOString().split('T') + file.originalname)
-    }
-})
 
-const fileFilter = (req, file, cb) => {
-    // reject a file
-    if (file.mimetype === 'image/jpeg' || file.mimetype === ' image/png') {
-    cb(null, false)
-} else {
-    cb(null, true) 
-    } 
-}
-const upload = multer ({storage : storage, limits: {
-    fileSize: 1024 * 1024 * 5
-},  
-    fileFilter: fileFilter
-})
 
 
 // all products
 router.get('/api/v1/products', async (req, res) => {
-    
     try {
       const newProduct = await Product.find({
-        name: req.body.name,
-        desc: req.body.desc,
-        weight: req.body.weight,
-        productImage: req.file.path
+          userId: req.userData.userId
       })
       console.log(newProduct)
       res.status(200).json(newProduct)
@@ -50,14 +23,17 @@ router.get('/api/v1/products', async (req, res) => {
 
 
 // create a breakup product
-router.post('/api/v1/products',upload.single('productImage'), async (req, res, next) => {
+router.post('/api/v1/products', upload.single('image'), async (req, res,) => {
     try {
+        // upload image to cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path)
     const products = new Products ({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         desc: req.body.desc,
         weight: req.body.weight,
-        productImage: req.file.path
+        image: result.secure_url,
+        cloudinary_id: result.public_id
     })
     const newProducts = await products.save()
     console.log(newProducts)
@@ -69,7 +45,8 @@ router.post('/api/v1/products',upload.single('productImage'), async (req, res, n
         res.status(500).json(err)
     }
 })
-    
+
+// find product 
 router.get('/api/v1/products/:productId', async (req, res,) => {
     try{
         const id = req.params.productId
@@ -87,7 +64,7 @@ router.get('/api/v1/products/:productId', async (req, res,) => {
 router.patch('/api/v1/products/:productId', async (req, res) => {
     try {
         const id = req.params.productId
-        const updateOps ={};
+        const updateOps = {};
         for (const ops of req.body) {
             updateOps[ops.propName] = ops.value
         }
@@ -103,7 +80,7 @@ router.patch('/api/v1/products/:productId', async (req, res) => {
 router.delete('/api/v1/products/:productId', async (req, res) => {
     try{
         const id = req.params.productId
-        const deleteProduct = await Product.Remove({_id: id})
+        const deleteProduct = await Products.remove({_id: id})
         res.status(200).json(deleteProduct)
     } catch (err) {
         console.log(err)

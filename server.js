@@ -1,9 +1,9 @@
 const config = require("dotenv").config()
-const morgan = require('morgan')
 const express = require('express')
-const forumRoutes  = require("./routes/forum");
+const postRoutes  = require("./routes/post");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/products")
+const orderRoutes = require("./routes/orders")
 const bodyParser = require('body-parser')
 const cors = require("cors")
 const mongoose = require ('mongoose');
@@ -15,15 +15,17 @@ app.get('/', (req, res) => {
   res.send('Hello Wasdsorld!')
 })
 
-app.use(morgan('dev'))
+
 app.use(express.json())
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({limit: '20mb' , extended:true}))
 app.use(cors({origin: '*'}))
 
-app.use(forumRoutes)
+app.use(postRoutes)
 app.use(userRoutes)
 app.use(productRoutes)
+app.use(orderRoutes)
+
 
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true , useUnifiedTopology: true })
