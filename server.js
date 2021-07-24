@@ -4,6 +4,7 @@ const postRoutes  = require("./routes/post");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/products")
 const orderRoutes = require("./routes/orders")
+const commentRoutes = require("./routes/comments")
 const bodyParser = require('body-parser')
 const cors = require("cors")
 const mongoose = require ('mongoose');
@@ -25,6 +26,7 @@ app.use(postRoutes)
 app.use(userRoutes)
 app.use(productRoutes)
 app.use(orderRoutes)
+app.use(commentRoutes)
 
 
 

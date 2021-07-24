@@ -32,13 +32,16 @@ exports.registerValidator = () => {
 
     check('confirmPassword')
       .trim()
-      .isLength({min:4 , max:16})
-      .withMessage('Password must be between 4 to 16 characters')
+      .isLength({min:8 , max:16})
+      .withMessage('Password must be between 8 to 16 characters')
       .custom((confirmPassword,{req})=> {
+        console.log(confirmPassword)
           const password = req.body.password
           if (password != confirmPassword) {
               throw new Error ('Passwords must be same')
-          } 
+          } else {
+            return true
+          }
       })
   ]
 }

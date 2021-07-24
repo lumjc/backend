@@ -7,6 +7,7 @@ const User = require ('../models/user');
 const { registerValidator, loginValidator, resultsValidator } = require('../middleware/express-validator');
 
 router.post('/api/v1/user/signup', registerValidator(), async (req, res) => {
+    console.log(req.body)
     const errors = resultsValidator(req)
     if (errors.length > 0) {
       return res.status(400).json({
@@ -101,16 +102,17 @@ router.post('/api/v1/user/signup', registerValidator(), async (req, res) => {
 router.post('/api/v1/user/login',loginValidator(), async (req, res) => {
     try {
         const user = await User.findOne({
-            email: req.body.email
+            username: req.body.username
         })
-
+        console.log(req.body.username)
         if (user) {
             let match = await bcrypt.compare(req.body.password, user.password)
             console.log(match);
             if (match) {
            const token = jwt.sign({
                     email: req.body.email,
-                    username: req.body.username
+                    username: req.body.username,
+                    userId: user._id
                 }, process.env.JWT_KEY,
                 {
                     expiresIn: "1h"

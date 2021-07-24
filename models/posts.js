@@ -1,20 +1,16 @@
 const mongoose = require('mongoose')
 
 const postsSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    username: {
-      type: String,
-      required: true
+      required: true,
+      ref:'myuser'
     },
     createdAt: {
       type: Date,
       default: Date.now()
     },
-    content: {
+    context: {
         type: String,
         required: true
     }
