@@ -26,7 +26,7 @@ router.post('/api/v1/orders',async (req,res) =>{
         const orders = new Orders ({
             address : newAddress,
             products: req.body.product_id
-        })
+        }).populate('user')
         console.log(orders)
         console.log(req.body.product_id)
         const newOrders = await orders.save()
