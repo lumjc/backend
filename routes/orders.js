@@ -2,8 +2,9 @@ const express = require ('express');
 const Address = require('../models/address');
 const router = express.Router();
 const Orders = require('../models/orders');
+const checkAuth = require('../middleware/check-auth');
 
-router.get('/api/v1/orders',async (req,res) =>{
+router.get('/api/v1/orders', checkAuth, async (req,res) =>{
     try {
         const newOrder = await Orders.find().populate('address').populate('products')
         res.status(200).json(newOrder)
@@ -13,7 +14,7 @@ router.get('/api/v1/orders',async (req,res) =>{
     }
 })
 
-router.post('/api/v1/orders',async (req,res) =>{
+router.post('/api/v1/orders',checkAuth,async (req,res) =>{
     try{
         const address = new Address ({
             addressType: req.body.addressType,
@@ -40,4 +41,29 @@ router.post('/api/v1/orders',async (req,res) =>{
     }
 })
 
+// find orders
+router.get('/api/v1/orders/:orderId', async (req, res,) => {
+    try{
+        const id = req.params.orderId
+      const newOrders = await Orders.findById(id)
+      res.json(newOrders)
+        res.status(200).json()
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({error : err})
+    }
+   
+})
+
+router.delete('/api/v1/orders/:orderId', async (req, res) => {
+    try{
+        const id = req.params.orderId
+        const deleteOrder = await Orders.remove({_id: id})
+        res.status(200).json(deleteOrder)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json(err)
+    }
+   
+})
 module.exports = router
