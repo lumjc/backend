@@ -13,6 +13,9 @@ const addressSchema = mongoose.Schema ({
     },
   postalCode:{
       type:Number
+    },
+    itemLimit: {
+      type:Number
     }
 })
 
