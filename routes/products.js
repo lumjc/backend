@@ -6,14 +6,15 @@ const cloudinary = require("../utility/cloudinary");
 const upload = require("../utility/multer");
 const checkAuth = require("../middleware/check-auth");
 const Products = require("../models/products");
+const Order = require("../models/orders");
 
-// get all products
-router.get("/api/v1/products", checkAuth, async (req, res) => {
+// get all products based on orders
+router.get("/api/v1/orders/:orderID/products", async (req, res) => {
   try {
     const newProduct = await Products.find({
-      userId: req.userData.userId, //given by JWT decoded token, it means user need to login first, decode their token and pass the userId
+      orderId: req.params.orderID,
     });
-    console.log(newProduct);
+    // console.log(newProduct);
     res.status(200).json(newProduct);
   } catch (err) {
     console.log(err);
@@ -21,10 +22,9 @@ router.get("/api/v1/products", checkAuth, async (req, res) => {
   }
 });
 
-// create a breakup product
+// create product based on order
 router.post(
-  "/api/v1/products",
-  checkAuth,
+  "/api/v1/products/:orderID",
   upload.single("file"),
   async (req, res) => {
     try {
@@ -37,10 +37,17 @@ router.post(
         weight: req.body.weight,
         image: result.secure_url,
         cloudinary_id: result.public_id,
-        userId: req.userData.userId,
+        orderId: req.params.orderID,
       });
       const newProducts = await products.save();
       console.log(newProducts);
+      const savedOrder = await Order.updateOne(
+        {
+          _id: req.params.orderID,
+        },
+        { $push: { products: newProducts._id } }
+      );
+      console.log(savedOrder);
       res.status(201).json({
         message: "created product successfully",
       });
