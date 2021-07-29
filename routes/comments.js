@@ -13,6 +13,7 @@ router.post("/api/v1/comments/:postId", checkAuth, async (req, res) => {
       username: req.userData.username,
     });
     const newComments = await comments.save();
+    console.log("==newComments==");
     console.log(newComments);
 
     const savedComment = await Posts.updateOne(
